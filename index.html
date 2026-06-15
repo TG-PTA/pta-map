@@ -36,7 +36,11 @@ html, body {
 
 <div class="header">
 <b>地域安全・防災マップ</b><br>
-🔴 不審者　🟢 野生動物　🔵 浸水
+🔴 不審者　
+🟢 野生動物　
+🔵 浸水　
+🟤 倒木　
+🟠 その他
 </div>
 
 <div id="map"></div>
@@ -59,19 +63,23 @@ maxZoom: 19
 
 function getColor(type){
 
-  if(type === "不審者"){
-    return "red";
-  }
+  switch(type){
 
-  if(type === "野生動物"){
-    return "green";
-  }
+    case "不審者":
+      return "red";
 
-  if(type === "浸水"){
-    return "blue";
-  }
+    case "野生動物":
+      return "green";
 
-  return "orange";
+    case "浸水":
+      return "blue";
+
+    case "倒木":
+      return "brown";
+
+    default:
+      return "orange";
+  }
 }
 
 fetch(DATA_URL)
@@ -91,11 +99,12 @@ fetch(DATA_URL)
     ).addTo(map);
 
     marker.bindPopup(
-      "<b>情報種別：</b>" + item.type + "<br>" +
-      "<b>場所：</b>" + item.place + "<br>" +
-      "<b>内容：</b>" + (item.detail || "") + "<br>" +
-      "<b>日時：</b>" + (item.date || "") + " " + (item.time || "")
-    );
+  "<b>情報種別：</b>" + item.type + "<br>" +
+  "<b>状況区分：</b>" + (item.category || "") + "<br>" +
+  "<b>場所：</b>" + item.place + "<br>" +
+  "<b>内容：</b>" + (item.detail || "") + "<br>" +
+  "<b>日時：</b>" + (item.date || "") + " " + (item.time || "")
+);
 
   });
 
