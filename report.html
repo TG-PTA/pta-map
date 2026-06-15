@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>情報投稿</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+<style>
+body{
+  font-family:sans-serif;
+  margin:0;
+  padding:10px;
+}
+
+#map{
+  height:300px;
+  margin-bottom:10px;
+}
+
+input,select,textarea,button{
+  width:100%;
+  padding:10px;
+  margin:5px 0;
+  box-sizing:border-box;
+}
+
+button{
+  font-size:16px;
+}
+</style>
+</head>
+
+<body>
+
+<h2>情報投稿</h2>
+
+<select id="type">
+  <option>不審者</option>
+  <option>野生動物</option>
+  <option>浸水</option>
+  <option>倒木</option>
+  <option>その他</option>
+</select>
+
+<div id="map"></div>
+
+<p>地図をタップして場所を指定してください</p>
+
+<input id="place" placeholder="場所の説明（例：多度中学校裏山）">
+
+<textarea id="detail" rows="5" placeholder="詳細内容"></textarea>
+
+<button onclick="sendData()">送信</button>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+
+const SCRIPT_URL =
+"https://script.google.com/macros/s/AKfycbz4aFWX2SLie7wEZi0GeUpudFaz9gY80d6szb81z1QxI0N3tV32wdZ98QD2YsrU5smAZA/exec";
+
+let lat = null;
+let lng = null;
+let marker = null;
+
+const map = L.map('map').setView([35.13,136.62],13);
+
+L.tileLayer(
+'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+).addTo(map);
+
+map.on('click', function(e){
+
+  lat = e.latlng.lat;
+  lng = e.latlng.lng;
+
+  if(marker){
+    map.removeLayer(marker);
+  }
+
+  marker = L.marker([lat,lng]).addTo(map);
+
+});
+
+function sendData(){
+
+  if(lat === null){
+    alert("地図上で場所を選択してください");
+    return;
+  }
+
+  const data = {
+    type: document.getElementById("type").value,
+    place: document.getElementById("place").value,
+    detail: document.getElementById("detail").value,
+    lat: lat,
+    lng: lng
+  };
+
+  fetch(SCRIPT_URL,{
+    method:"POST",
+    body:JSON.stringify(data)
+  })
+  .then(r=>r.text())
+  .then(()=>{
+
+    alert("送信しました");
+
+    location.href =
+    "https://tg-pta.github.io/pta-map/";
+
+  });
+
+}
+</script>
+
+</body>
+</html>
