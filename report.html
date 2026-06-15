@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
 <style>
+
 body{
   font-family:sans-serif;
   margin:0;
@@ -17,19 +18,31 @@ body{
 
 #map{
   height:300px;
-  margin-bottom:10px;
+  margin:10px 0;
 }
 
-input,select,textarea,button{
+input,
+select,
+textarea,
+button{
   width:100%;
   padding:10px;
-  margin:5px 0;
+  margin:5px 0 15px 0;
   box-sizing:border-box;
 }
 
 button{
   font-size:16px;
 }
+
+label{
+  font-weight:bold;
+}
+
+small{
+  color:#666;
+}
+
 </style>
 </head>
 
@@ -37,7 +50,7 @@ button{
 
 <h2>情報投稿</h2>
 
-<label><b>情報種別</b></label>
+<label>情報種別</label>
 <select id="type">
   <option>不審者</option>
   <option>野生動物</option>
@@ -46,37 +59,56 @@ button{
   <option>その他</option>
 </select>
 
-<label><b>状況区分</b></label>
+<label>状況区分</label>
 <select id="category">
   <option>目撃</option>
   <option>人身被害</option>
   <option>痕跡</option>
   <option>その他</option>
 </select>
+
 <button type="button" onclick="getLocation()">
-📍現在地を取得
-</button>  
+📍 現在地を取得
+</button>
+
 <div id="map"></div>
 
-<p>地図をタップして場所を指定してください</p>
+<small>
+現在地を取得するか、地図をタップして場所を指定してください
+</small>
 
-<label><b>発見日</b></label>
+<label>発見日（実際に発見した日）</label>
 <input type="date" id="date">
 
-<label><b>発見時間</b></label>
+<label>発見時間（実際に発見した時間）</label>
 <input type="time" id="time">
 
-<label><b>場所の説明</b></label>
-<input id="place"
-placeholder="例：○○公園北側、○○交差点付近">
+<small>
+不明な場合はおおよその時間で構いません
+</small>
 
-<label><b>詳細内容</b></label>
-<textarea id="detail" rows="5"
-placeholder="状況をできるだけ詳しく記入してください"></textarea>
+<label>場所の説明</label>
+<input
+  id="place"
+  placeholder="例：○○公園北側、○○交差点付近"
+>
 
- <label><b>投稿者名（任意）</b></label>
-<input id="name"> 
-<button onclick="sendData()">送信</button>
+<label>詳細内容</label>
+<textarea
+  id="detail"
+  rows="5"
+  placeholder="状況をできるだけ詳しく記入してください"
+></textarea>
+
+<label>投稿者名（任意）</label>
+<input
+  id="name"
+  placeholder="任意"
+>
+
+<button onclick="sendData()">
+送信
+</button>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -89,11 +121,20 @@ let lat = null;
 let lng = null;
 let marker = null;
 
-const map = L.map('map').setView([35.13,136.62],13);
+const map =
+L.map('map').setView([35.13,136.62],13);
 
 L.tileLayer(
 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
 ).addTo(map);
+
+const now = new Date();
+
+document.getElementById("date").value =
+now.toISOString().split("T")[0];
+
+document.getElementById("time").value =
+now.toTimeString().slice(0,5);
 
 map.on('click', function(e){
 
@@ -104,69 +145,112 @@ map.on('click', function(e){
     map.removeLayer(marker);
   }
 
-  marker = L.marker([lat,lng]).addTo(map);
+  marker =
+    L.marker([lat,lng]).addTo(map);
 
 });
 
 function getLocation(){
 
   if(!navigator.geolocation){
+
     alert("位置情報が利用できません");
+
     return;
   }
 
-  navigator.geolocation.getCurrentPosition(function(position){
+  navigator.geolocation.getCurrentPosition(
 
-    lat = position.coords.latitude;
-    lng = position.coords.longitude;
+    function(position){
 
-    map.setView([lat,lng],16);
+      lat =
+        position.coords.latitude;
 
-    if(marker){
-      map.removeLayer(marker);
+      lng =
+        position.coords.longitude;
+
+      map.setView([lat,lng],16);
+
+      if(marker){
+        map.removeLayer(marker);
+      }
+
+      marker =
+        L.marker([lat,lng]).addTo(map);
+
+    },
+
+    function(){
+
+      alert(
+        "位置情報を取得できませんでした"
+      );
+
     }
 
-    marker = L.marker([lat,lng]).addTo(map);
+  );
 
-  }, function(){
-    alert("位置情報を取得できませんでした");
-  });
+}
 
-}  
 function sendData(){
 
   if(lat === null){
-    alert("地図上で場所を選択してください");
+
+    alert(
+      "現在地取得または地図上で場所を指定してください"
+    );
+
     return;
+
   }
 
   const data = {
-  type: document.getElementById("type").value,
-  category: document.getElementById("category").value,
-  date: document.getElementById("date").value,
-  time: document.getElementById("time").value,
-  place: document.getElementById("place").value,
-  detail: document.getElementById("detail").value,
-  name: document.getElementById("name").value,
-  lat: lat,
-  lng: lng
-};
 
-  fetch(SCRIPT_URL,{
-    method:"POST",
-    body:JSON.stringify(data)
-  })
-  .then(r=>r.text())
-  .then(()=>{
+    type:
+      document.getElementById("type").value,
+
+    category:
+      document.getElementById("category").value,
+
+    date:
+      document.getElementById("date").value,
+
+    time:
+      document.getElementById("time").value,
+
+    place:
+      document.getElementById("place").value,
+
+    detail:
+      document.getElementById("detail").value,
+
+    name:
+      document.getElementById("name").value,
+
+    lat: lat,
+    lng: lng
+
+  };
+
+  fetch(
+    SCRIPT_URL,
+    {
+      method:"POST",
+      body:JSON.stringify(data)
+    }
+  )
+  .then(r => r.text())
+  .then(() => {
 
     alert("送信しました");
 
     location.href =
-    "https://tg-pta.github.io/pta-map/";
+      "https://tg-pta.github.io/pta-map/";
 
   });
 
 }
+
 </script>
 
 </body>
