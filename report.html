@@ -100,12 +100,11 @@ small{
   placeholder="状況をできるだけ詳しく記入してください"
 ></textarea>
 
-<label>投稿者名（任意）</label>
+<label>投稿者名（必須）</label>
 <input
   id="name"
-  placeholder="任意"
+  placeholder="お名前を入力してください"
 >
-
 <button onclick="sendData()">
 送信
 </button>
@@ -193,7 +192,15 @@ function getLocation(){
 }
 
 function sendData(){
+  if(
+    document.getElementById("name").value.trim() === ""
+  ){
 
+    alert("投稿者名を入力してください");
+
+    return;
+
+  }
   if(lat === null){
 
     alert(
