@@ -59,9 +59,9 @@ html, body {
 
 <div class="header">
 <b>多度学園校区内安全・防災マップ</b><br>
-🔴不審者　🟢野生動物<br>
-🔵浸水・冠水　🟤倒木<br>
-🟠その他
+🟥 不審者　🟨 野生動物<br>
+🟦 浸水・冠水🟫 倒木<br>
+⬜ その他
 </div>
 
 <div id="map"></div>
@@ -93,22 +93,21 @@ function getColor(type){
   switch(type){
 
     case "不審者":
-      return "red";
+      return "#e53935";   // 赤
 
     case "野生動物":
-      return "green";
+      return "#fbc02d";   // 黄色
 
-    case "浸水・冠水":
-      return "blue";
+    case "浸水":
+      return "#1e88e5";   // 青
 
     case "倒木":
-      return "brown";
+      return "#8d6e63";   // 茶色
 
     default:
-      return "orange";
+      return "#757575";   // 灰色
   }
 }
-
 fetch(DATA_URL)
 .then(response => response.json())
 .then(data => {
