@@ -105,7 +105,16 @@ small{
   id="name"
   placeholder="お名前を入力してください"
 >
+<label>連絡先（非公開）</label>
+<input
+  id="contact"
+  placeholder="電話番号またはメールアドレス"
+>
 
+<small>
+管理者から確認が必要な場合のみ使用します。公開はされません。
+</small>
+  
 <div style="
   background:#fff3cd;
   border:1px solid #ffe69c;
@@ -252,11 +261,14 @@ function sendData(){
     detail:
       document.getElementById("detail").value,
 
-    name:
-      document.getElementById("name").value,
+   name:
+  document.getElementById("name").value,
 
-    lat: lat,
-    lng: lng
+contact:
+  document.getElementById("contact").value,
+
+lat: lat,
+lng: lng
 
   };
 
