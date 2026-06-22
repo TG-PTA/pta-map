@@ -96,7 +96,7 @@ function getColor(type){
       return "#e53935";   // 赤
 
     case "野生動物":
-      return "#fbc02d";   // 黄色
+      return "#FFD700";   // ゴールド
 
     case "浸水":
       return "#1e88e5";   // 青
@@ -116,12 +116,13 @@ fetch(DATA_URL)
 
     const marker = L.circleMarker(
       [item.lat, item.lng],
-      {
-        radius: 8,
-        color: getColor(item.type),
-        fillColor: getColor(item.type),
-        fillOpacity: 0.8
-      }
+     {
+  radius: 8,
+  color: "#000",
+  weight: 2,
+  fillColor: getColor(item.type),
+  fillOpacity: 0.9
+}
     ).addTo(map);
 
     marker.bindPopup(
